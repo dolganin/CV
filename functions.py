@@ -13,7 +13,12 @@ def grad(func):
 
 
 def get_persons_list():
-    return listdir(rootdir)
+    pers_dict = dict()
+    persons = listdir(rootdir)
+    for i in range(len(persons)):
+        pers_dict[persons[i]] = i
+    return pers_dict
+
 
 def read_train_set():
     dataset=dict()
