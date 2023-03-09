@@ -6,6 +6,8 @@ from cv2 import cvtColor
 from cv2 import COLOR_BGR2GRAY
 import numpy as np
 import torch
+import torch.nn as func
+import torch.optim as optim
 
 
 rootdir = "simpsons_dataset"
@@ -45,11 +47,24 @@ def read_full_set():
 
 
 def splitting(data, label, cnt):
-    test_length = cnt-15000
-    train_length = 15000
+    test_length = cnt-int(0.8*cnt)
+    train_length = int(0.8*cnt)
     (x_train, x_test) = torch.utils.data.random_split(data, [train_length, test_length])
     (y_train, y_test) = torch.utils.data.random_split(label, [train_length, test_length])
     return (x_train, y_train), (x_test, y_test)
+
+def model_create():
+    model =  func.Sequential(
+        func.Conv2d(1,1, kernel_size=4),
+        func.ReLU(),
+        func.Conv2d(1,1, kernel_size= 2),
+        func.Linear(196, 42),
+        func.Softmax()
+    )
+    loss = func.CrossEntropyLoss
+    optimizer = optim.adam
+    return model, optimizer, loss
+
 
 
 
