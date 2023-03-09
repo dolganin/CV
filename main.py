@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 persons_list = get_persons_list()
 
-data = read_full_set()
+data, label = read_full_set()
 
 plt.figure(figsize=(10,10))
 for i in range(25):
@@ -13,7 +13,7 @@ for i in range(25):
  plt.xticks([])
  plt.yticks([])
  plt.grid(False)
- plt.imshow(data[0][i], cmap=plt.cm.binary)
+ plt.imshow(data[i], cmap=plt.cm.binary)
 plt.show()
 
 

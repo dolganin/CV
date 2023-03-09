@@ -24,19 +24,26 @@ def get_persons_list():
 
 
 def read_full_set():
-    dataset=[]
+
+    count_elems = 0
     for directory in listdir(rootdir):
-        lst_1_person = np.zeros((len(listdir(rootdir+'\\'+directory)), 3, 28, 28))
-        i = 0
-        for image in listdir(rootdir+'\\'+directory):
-            rawimage = imread(rootdir+'\\'+directory+'\\'+image)
+        count_elems+= len(listdir(rootdir+'\\'+directory))
+    dataset = np.zeros((count_elems, 28, 28))
+    labels = np.zeros(count_elems)
+
+    counter = 0
+    for directory in listdir(rootdir):
+        label = 0
+        for image in listdir(rootdir + '\\' + directory):
+            rawimage = imread(rootdir + '\\' + directory + '\\' + image)
             rawimage = cvtColor(rawimage, COLOR_BGR2GRAY)
             blob = dnn.blobFromImage(rawimage, 1/255.0, (28,28), swapRB = True, crop = False)
             blob = blob.reshape(1,28,28)
-            lst_1_person[i] = blob
-            i += 1
-        dataset.append(lst_1_person)
-    return dataset
+            dataset[counter] = blob
+            labels[counter] = label
+            counter += 1
+            label +=1
+    return dataset, labels
 
 
 
