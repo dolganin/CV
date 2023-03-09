@@ -47,7 +47,9 @@ def read_full_set():
 def splitting(data, label, cnt):
     test_length = cnt-15000
     train_length = 15000
-    test_length *= 2
-    train_length *= 2
-    return torch.utils.data.random_split(data, label, [train_length, test_length])
+    (x_train, x_test) = torch.utils.data.random_split(data, [train_length, test_length])
+    (y_train, y_test) = torch.utils.data.random_split(label, [train_length, test_length])
+    return (x_train, y_train), (x_test, y_test)
+
+
 
