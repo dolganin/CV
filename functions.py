@@ -21,7 +21,7 @@ class NeuralNetwork(func.Module):
         func.Linear(256,196),
         func.ReLU(),
         func.Linear(196, 42),
-        func.Softmax()
+        #func.Softmax()
     )
 
     def forward(self, x):
@@ -73,8 +73,9 @@ def splitting(data, label, cnt):
     return (x_train, y_train), (x_test, y_test)
 
 def model_create():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = NeuralNetwork.to(device)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = NeuralNetwork()
+    NeuralNetwork = NeuralNetwork.to(device)
     loss = func.CrossEntropyLoss
     optimizer = optim.adam
 
