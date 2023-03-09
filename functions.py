@@ -12,6 +12,25 @@ import torch.optim as optim
 
 rootdir = "simpsons_dataset"
 
+class NeuralNetwork(func.Module):
+    def __init__(self):
+        self.flatten = func.Flatten()
+        self.linear_relu_stack = func.Sequential(
+        func.Linear(28*28,256),
+        func.ReLU(),
+        func.Linear(256,196),
+        func.ReLU(),
+        func.Linear(196, 42),
+        func.Softmax()
+    )
+
+    def forward(self, x):
+        x = self.flatten(x)
+        logits = self.linear_relu_stack(x)
+        return logits
+
+
+
 def grad(func):
     return None
 
@@ -54,16 +73,14 @@ def splitting(data, label, cnt):
     return (x_train, y_train), (x_test, y_test)
 
 def model_create():
-    model =  func.Sequential(
-        func.Conv2d(1,1, kernel_size=4),
-        func.ReLU(),
-        func.Conv2d(1,1, kernel_size= 2),
-        func.Linear(196, 42),
-        func.Softmax()
-    )
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model = NeuralNetwork.to(device)
     loss = func.CrossEntropyLoss
     optimizer = optim.adam
+
     return model, optimizer, loss
+
+
 
 
 
