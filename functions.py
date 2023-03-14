@@ -2,19 +2,19 @@ import matplotlib.pyplot as plt
 from os import listdir
 from os.path import join
 import pandas as pd
-#from cv2 import imread, dnn, cvtColor, COLOR_BGR2GRAY
-#import numpy as np
 import torch
+import torchmetrics.classification.accuracy
 import torch.nn as func
 import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset
-from torchvision import datasets, transforms
 from torchvision.io import read_image
 
 
 rootdir = "simpsons_dataset"
 rate_learning = 1e-4
-epochs = 10
+epochs = 100
+
+print(torch.cuda.is_available())
 
 class NeuralNetwork(func.Module):
     def __init__(self):
@@ -78,6 +78,8 @@ def model_create():
     return model, optimizer, loss
 
 def train_step(model, optim, trainloader, loss_func):
+    f = open('log.txt', 'w', encoding="utf-8")
+    accuracy = torchmetrics.Accuracy(task="multiclass", num_classes= 42, k_func= 1)
     for e in range(epochs):
         train_loss = 0.0
         for data, labels in trainloader:
@@ -85,31 +87,21 @@ def train_step(model, optim, trainloader, loss_func):
                 data, labels = data.cuda(), labels.cuda()
             optim.zero_grad()
             target = model(data)
-            #pred_probabily = func.Softmax(dim=1)(target)
-            #pred = pred_probabily.argmax(1)
             loss = loss_func(target, labels)
             loss.backward()
             optim.step()
             temp = loss.item()
             train_loss += temp
-            print("The current epoch is " +str(e)+"\n"+"The current loss is "+ str(temp)+"\n", "The global loss is "+ str(train_loss))
+            f.write("The current epoch is " +str(e)+"\n"+"The current loss is "+ str(temp)+"\n")
+            f.write("Accuracy = {}\n\n".format(accuracy(target, labels)))
+
     return model, train_loss
 
-def learning(x_train, y_train, criterion, optim, model):
-    for i in range(epochs):
-        opt.zero_grad()
-        pred = model.forward(x_train)
-        loss = criterion(pred, y_train)
-        loss.backward()
-        optim.step()
-        train_loss += loss.item()
-
-
-def predict(x_test, y_test):
-    logit = model(x_train, y_train)
-    pred_probabily = func.Softmax(dim=1)(logit)
-    y_pred = pred_probabily.argmax(1)
-    return y_pred
+# def predict(x_test, y_test):
+#     logit = model(x_train, y_train)
+#     pred_probabily = func.Softmax(dim=1)(logit)
+#     y_pred = pred_probabily.argmax(1)
+#     return y_pred
 
 
 
