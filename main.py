@@ -1,12 +1,19 @@
-from functions import read_full_set, splitting, get_persons_list, model_create
+import torch
+from functions import  splitting, model_create, predict, Data, dataload, train_step
+from torchvision.transforms import transforms
 
-persons_list = get_persons_list()
+transformer = transforms.Compose([transforms.ConvertImageDtype(dtype=torch.float32),transforms.Resize([28,28]), transforms.Normalize((0,0,0),(1,1,1)), transforms.Grayscale(num_output_channels=1)])
 
-data, label, cnt = read_full_set()
+simpsons = Data('labels.csv', 'simpsons_data', transform= transformer)
 
-(x_train, y_train),(x_test, y_test) = splitting(data, label, cnt)
+(train, test) = splitting(simpsons)
+
+(train_loader, test_loader) = dataload(train, test)
 
 model, optimizer, loss =  model_create()
+
+(model, train_loss) = train_step(model, optimizer, train_loader, loss)
+
 
 
 

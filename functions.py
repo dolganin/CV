@@ -1,27 +1,31 @@
 import matplotlib.pyplot as plt
 from os import listdir
-from cv2 import imread
-from cv2 import dnn
-from cv2 import cvtColor
-from cv2 import COLOR_BGR2GRAY
-import numpy as np
+from os.path import join
+import pandas as pd
+#from cv2 import imread, dnn, cvtColor, COLOR_BGR2GRAY
+#import numpy as np
 import torch
 import torch.nn as func
 import torch.optim as optim
+from torch.utils.data import DataLoader, Dataset
+from torchvision import datasets, transforms
+from torchvision.io import read_image
 
 
 rootdir = "simpsons_dataset"
+rate_learning = 1e-4
+epochs = 10
 
 class NeuralNetwork(func.Module):
     def __init__(self):
+        super(NeuralNetwork, self).__init__()
         self.flatten = func.Flatten()
         self.linear_relu_stack = func.Sequential(
-        func.Linear(28*28,256),
+        func.Linear(28*28, 256),
         func.ReLU(),
-        func.Linear(256,196),
+        func.Linear(256, 196),
         func.ReLU(),
         func.Linear(196, 42),
-        #func.Softmax()
     )
 
     def forward(self, x):
@@ -29,58 +33,83 @@ class NeuralNetwork(func.Module):
         logits = self.linear_relu_stack(x)
         return logits
 
+class Data(Dataset):
+    def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):
+        self.img_labels = pd.read_csv(annotations_file)
+        self.img_dir = img_dir
+        self.transform = transform
+        self.target_transform = target_transform
+    def __len__(self):
+        return len(self.img_labels)
+
+    def __getitem__(self, idx):
+        img_path = join(self.img_dir, self.img_labels.iloc[idx, 0])
+        image = read_image(img_path)
+        label = self.img_labels.iloc[idx, 1]
+        if self.transform:
+            image = self.transform(image)
+        if self.target_transform:
+            label = self.target_transform(label)
+        return image, label
+
+
+def dataload(train, test):
+    trainloader = DataLoader(train, batch_size=16)
+    testloader = DataLoader(test, batch_size=16)
+    return trainloader, testloader
 
 
 def grad(func):
     return None
 
-
-def get_persons_list():
-    pers_dict = dict()
-    persons = listdir(rootdir)
-    for i in range(len(persons)):
-        pers_dict[persons[i]] = i
-    return pers_dict
-
-
-def read_full_set():
-    count_elems = 0
-    for directory in listdir(rootdir):
-        count_elems+= len(listdir(rootdir+'\\'+directory))
-    dataset = np.zeros((count_elems, 28, 28))
-    labels = np.zeros(count_elems)
-
-    counter = 0
-    for directory in listdir(rootdir):
-        label = 0
-        for image in listdir(rootdir + '\\' + directory):
-            rawimage = imread(rootdir + '\\' + directory + '\\' + image)
-            rawimage = cvtColor(rawimage, COLOR_BGR2GRAY)
-            blob = dnn.blobFromImage(rawimage, 1/255.0, (28,28), swapRB = True, crop = False)
-            blob = blob.reshape(1,28,28)
-            dataset[counter] = blob
-            labels[counter] = label
-            counter += 1
-            label +=1
-    return dataset, labels, count_elems
-
-
-def splitting(data, label, cnt):
-    test_length = cnt-int(0.8*cnt)
-    train_length = int(0.8*cnt)
-    (x_train, x_test) = torch.utils.data.random_split(data, [train_length, test_length])
-    (y_train, y_test) = torch.utils.data.random_split(label, [train_length, test_length])
-    return (x_train, y_train), (x_test, y_test)
+def splitting(data):
+    length = data.__len__()
+    test_length = length - int(0.8*length)
+    train_length = int(0.8*length)
+    (train, test) = torch.utils.data.random_split(data, [train_length, test_length])
+    return (train, test)
 
 def model_create():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = NeuralNetwork()
-    NeuralNetwork = NeuralNetwork.to(device)
-    loss = func.CrossEntropyLoss
-    optimizer = optim.adam
-
+    if torch.cuda.is_available():
+        model = model.cuda()
+    loss = func.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=rate_learning)
     return model, optimizer, loss
 
+def train_step(model, optim, trainloader, loss_func):
+    for e in range(epochs):
+        train_loss = 0.0
+        for data, labels in trainloader:
+            if torch.cuda.is_available():
+                data, labels = data.cuda(), labels.cuda()
+            optim.zero_grad()
+            target = model(data)
+            #pred_probabily = func.Softmax(dim=1)(target)
+            #pred = pred_probabily.argmax(1)
+            loss = loss_func(target, labels)
+            loss.backward()
+            optim.step()
+            temp = loss.item()
+            train_loss += temp
+            print("The current epoch is " +str(e)+"\n"+"The current loss is "+ str(temp)+"\n", "The global loss is "+ str(train_loss))
+    return model, train_loss
+
+def learning(x_train, y_train, criterion, optim, model):
+    for i in range(epochs):
+        opt.zero_grad()
+        pred = model.forward(x_train)
+        loss = criterion(pred, y_train)
+        loss.backward()
+        optim.step()
+        train_loss += loss.item()
+
+
+def predict(x_test, y_test):
+    logit = model(x_train, y_train)
+    pred_probabily = func.Softmax(dim=1)(logit)
+    y_pred = pred_probabily.argmax(1)
+    return y_pred
 
 
 
