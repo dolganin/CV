@@ -19,9 +19,8 @@ class NeuralNetwork(func.Module):
         self.flatten = func.Flatten()
         self.linear_relu_stack = func.Sequential(
         func.Conv1d(in_channels=64, out_channels=64, stride=2, kernel_size=(9)),
-        func.Conv1d(in_channels=64, out_channels=64, kernel_size=(9)),
         func.ReLU(),
-        func.Conv1d(in_channels=64, out_channels=64,stride=3, kernel_size=(9)),
+        func.Linear(446, 144),
         func.ReLU(),
         func.Linear(144, 42),
     )
@@ -55,15 +54,15 @@ class Data(Dataset):
 
 
 def dataload(train, test):
-    trainloader = DataLoader(train, batch_size=64, shuffle= True)
-    testloader = DataLoader(test, batch_size=64, shuffle= True)
+    trainloader = DataLoader(train, batch_size=64, shuffle=True)
+    testloader = DataLoader(test, batch_size=64, shuffle=True)
     return trainloader, testloader
 
 
 def splitting(data):
     length = data.__len__()
-    test_length = length - int(0.8*length)
-    train_length = int(0.8*length)
+    test_length = length-16768
+    train_length = 16768
     (train, test) = torch.utils.data.random_split(data, [train_length, test_length])
     return (train, test)
 
