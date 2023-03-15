@@ -1,20 +1,17 @@
-import matplotlib.pyplot as plt
-from os import listdir
+from datetime import datetime
 from os.path import join
+
 import pandas as pd
-#from cv2 import imread, dnn, cvtColor, COLOR_BGR2GRAY
-#import numpy as np
 import torch
 import torch.nn as func
 import torch.optim as optim
+import torchmetrics.classification.accuracy
 from torch.utils.data import DataLoader, Dataset
-from torchvision import datasets, transforms
 from torchvision.io import read_image
-
 
 rootdir = "simpsons_dataset"
 rate_learning = 1e-4
-epochs = 10
+epochs = 80
 
 class NeuralNetwork(func.Module):
     def __init__(self):
@@ -59,9 +56,6 @@ def dataload(train, test):
     return trainloader, testloader
 
 
-def grad(func):
-    return None
-
 def splitting(data):
     length = data.__len__()
     test_length = length - int(0.8*length)
@@ -77,7 +71,12 @@ def model_create():
     optimizer = optim.Adam(model.parameters(), lr=rate_learning)
     return model, optimizer, loss
 
-def train_step(model, optim, trainloader, loss_func):
+def train_model(model, optim, trainloader, loss_func):
+    output = open('log_learning.txt', 'w', encoding="utf-8")
+    if torch.cuda.is_available():
+        accuracy = torchmetrics.Accuracy(task="multiclass", num_classes= 42, k_func= 1).to('cuda')
+    else:
+        accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=42, k_func=1)
     for e in range(epochs):
         train_loss = 0.0
         for data, labels in trainloader:
@@ -85,31 +84,43 @@ def train_step(model, optim, trainloader, loss_func):
                 data, labels = data.cuda(), labels.cuda()
             optim.zero_grad()
             target = model(data)
-            #pred_probabily = func.Softmax(dim=1)(target)
-            #pred = pred_probabily.argmax(1)
             loss = loss_func(target, labels)
             loss.backward()
             optim.step()
             temp = loss.item()
             train_loss += temp
-            print("The current epoch is " +str(e)+"\n"+"The current loss is "+ str(temp)+"\n", "The global loss is "+ str(train_loss))
-    return model, train_loss
+            output.write("The current epoch is " +str(e)+"\n"+"The current loss is "+ str(temp)+"\n")
+            output.write("Accuracy = {}\n".format(accuracy(target, labels)))
+            output.write("The time is "+ str(datetime.now())+'\n\n')
+    return model
 
-def learning(x_train, y_train, criterion, optim, model):
-    for i in range(epochs):
-        opt.zero_grad()
-        pred = model.forward(x_train)
-        loss = criterion(pred, y_train)
-        loss.backward()
-        optim.step()
-        train_loss += loss.item()
+def test_model(test_set, model):
+    output = open('log_testing.txt', 'w', encoding="utf-8")
+
+    if torch.cuda.is_available():
+        accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=42, k_func=1).to('cuda')
+    else:
+        accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=42, k_func=1)
+
+    cnt = 0
+    sum = 0
+    for data, labels in test_set:
+        if torch.cuda.is_available():
+            data, labels = data.cuda(), labels.cuda()
+        target = model(data)
+        acc = accuracy(target, labels)
+        sum += acc
+        cnt += 1
+        output.write("The current accuracy is ".format(acc)+'\n')
+    output.write("Summary accuracy is "+ str(sum/cnt))
+    return None
 
 
-def predict(x_test, y_test):
-    logit = model(x_train, y_train)
-    pred_probabily = func.Softmax(dim=1)(logit)
-    y_pred = pred_probabily.argmax(1)
-    return y_pred
+    #logit = model(x_train, y_train)
+    #pred_probabily = func.Softmax(dim=1)(logit)
+    #y_pred = pred_probabily.argmax(1)
+    #return y_pred
+
 
 
 
