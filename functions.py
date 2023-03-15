@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision.io import read_image
 
 rootdir = "simpsons_dataset"
-rate_learning = 1e-4
+rate_learning = 1e-3
 epochs = 80
 
 class NeuralNetwork(func.Module):
@@ -18,16 +18,20 @@ class NeuralNetwork(func.Module):
         super(NeuralNetwork, self).__init__()
         self.flatten = func.Flatten()
         self.linear_relu_stack = func.Sequential(
-        func.Linear(28*28, 256),
+        func.Conv1d(in_channels=64, out_channels=64, stride=2, kernel_size=(9)),
+        func.Conv1d(in_channels=64, out_channels=64, kernel_size=(9)),
         func.ReLU(),
-        func.Linear(256, 196),
+        func.Conv1d(in_channels=64, out_channels=64,stride=3, kernel_size=(9)),
         func.ReLU(),
-        func.Linear(196, 42),
+        func.Linear(144, 42),
     )
+        self.out = func.Softmax(dim=1)
 
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
+        logits = self.out(logits)
+        #logits = logits.argmax(1)
         return logits
 
 class Data(Dataset):
@@ -51,8 +55,8 @@ class Data(Dataset):
 
 
 def dataload(train, test):
-    trainloader = DataLoader(train, batch_size=16)
-    testloader = DataLoader(test, batch_size=16)
+    trainloader = DataLoader(train, batch_size=64, shuffle= True)
+    testloader = DataLoader(test, batch_size=64, shuffle= True)
     return trainloader, testloader
 
 
