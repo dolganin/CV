@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision.io import read_image
 
 rootdir = "simpsons_dataset"
-rate_learning = 1e-3
+rate_learning = 1e-4
 epochs = 80
 
 class NeuralNetwork(func.Module):
@@ -18,11 +18,11 @@ class NeuralNetwork(func.Module):
         super(NeuralNetwork, self).__init__()
         self.flatten = func.Flatten()
         self.linear_relu_stack = func.Sequential(
-        func.Conv1d(in_channels=64, out_channels=64, stride=2, kernel_size=(9)),
+        func.Linear(28*28, 256),
         func.ReLU(),
-        func.Linear(446, 144),
+        func.Linear(256, 196),
         func.ReLU(),
-        func.Linear(144, 42),
+        func.Linear(196, 42),
     )
         self.out = func.Softmax(dim=1)
 
@@ -71,7 +71,7 @@ def model_create():
     if torch.cuda.is_available():
         model = model.cuda()
     loss = func.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=rate_learning)
+    optimizer = optim.SGD(model.parameters(), lr=rate_learning)
     return model, optimizer, loss
 
 def train_model(model, optim, trainloader, loss_func):
@@ -114,8 +114,8 @@ def test_model(test_set, model):
         acc = accuracy(target, labels)
         sum += acc
         cnt += 1
-        output.write("The current accuracy is ".format(acc)+'\n')
-    output.write("Summary accuracy is "+ str(sum/cnt))
+        output.write("The current accuracy is = {}".format(acc)+'\n')
+    output.write("Summary accuracy is = {}".format(str(sum/cnt)))
     return None
 
 
