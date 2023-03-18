@@ -24,12 +24,11 @@ class NeuralNetwork(func.Module):
         func.ReLU(),
         func.Linear(196, 42),
     )
-        self.out = func.Softmax(dim=1)
 
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
-        logits = self.out(logits)
+        #logits = self.out(logits)
         #logits = logits.argmax(1)
         return logits
 
@@ -54,8 +53,8 @@ class Data(Dataset):
 
 
 def dataload(train, test):
-    trainloader = DataLoader(train, batch_size=64, shuffle=True)
-    testloader = DataLoader(test, batch_size=64, shuffle=True)
+    trainloader = DataLoader(train, batch_size=16)
+    testloader = DataLoader(test, batch_size=16)
     return trainloader, testloader
 
 
