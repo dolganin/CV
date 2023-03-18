@@ -28,8 +28,6 @@ class NeuralNetwork(func.Module):
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
-        #logits = self.out(logits)
-        #logits = logits.argmax(1)
         return logits
 
 class Data(Dataset):
@@ -60,8 +58,8 @@ def dataload(train, test):
 
 def splitting(data):
     length = data.__len__()
-    test_length = length-16768
-    train_length = 16768
+    test_length = length - int(0.8*length)
+    train_length = int(0.8*length)
     (train, test) = torch.utils.data.random_split(data, [train_length, test_length])
     return (train, test)
 
@@ -70,7 +68,7 @@ def model_create():
     if torch.cuda.is_available():
         model = model.cuda()
     loss = func.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=rate_learning)
+    optimizer = optim.Adam(model.parameters(), lr=rate_learning)
     return model, optimizer, loss
 
 def train_model(model, optim, trainloader, loss_func):
@@ -113,16 +111,9 @@ def test_model(test_set, model):
         acc = accuracy(target, labels)
         sum += acc
         cnt += 1
-        output.write("The current accuracy is = {}".format(acc)+'\n')
-    output.write("Summary accuracy is = {}".format(str(sum/cnt)))
+        output.write("The current accuracy is ={}".format(acc)+'\n')
+    output.write("Summary accuracy is "+ str(sum/cnt))
     return None
-
-
-    #logit = model(x_train, y_train)
-    #pred_probabily = func.Softmax(dim=1)(logit)
-    #y_pred = pred_probabily.argmax(1)
-    #return y_pred
-
 
 
 
