@@ -18,7 +18,10 @@ class NeuralNetwork(func.Module):
         super(NeuralNetwork, self).__init__()
         self.flatten = func.Flatten()
         self.linear_relu_stack = func.Sequential(
-        func.Linear(28*28, 256),
+        func.Linear(28*28, 512),
+        func.BatchNorm1d(512),
+        func.ReLU(),
+        func.Linear(512, 256),
         func.ReLU(),
         func.Linear(256, 196),
         func.ReLU(),
@@ -51,8 +54,8 @@ class Data(Dataset):
 
 
 def dataload(train, test):
-    trainloader = DataLoader(train, batch_size=16)
-    testloader = DataLoader(test, batch_size=16)
+    trainloader = DataLoader(train, batch_size=32)
+    testloader = DataLoader(test, batch_size=32)
     return trainloader, testloader
 
 
@@ -62,7 +65,6 @@ def splitting(data):
     train_length = int(0.8*length)
     (train, test) = torch.utils.data.random_split(data, [train_length, test_length])
     return (train, test)
-
 def model_create():
     model = NeuralNetwork()
     if torch.cuda.is_available():
