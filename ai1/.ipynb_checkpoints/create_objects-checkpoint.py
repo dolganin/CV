@@ -1,4 +1,5 @@
 from imports import *
+from model import NeuralNetwork
 def model_create(weights):
     stats = MulticlassStatScores(num_classes=classnum, average=None).to(device)  # Create metrics for every class. 
     # This method creates object that accumulate TP, TN, FN, FP for every class.

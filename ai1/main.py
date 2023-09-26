@@ -1,9 +1,10 @@
 from create_objects import model_create
 from load_split import load_and_split, dataload
-from loss import calculate_loss
 from model import NeuralNetwork
 from test import test
 from train import run_model
+from focused_loss import focused_loss
+from imports import epochs
 
 def main():
     train, test = load_and_split()
@@ -16,6 +17,10 @@ def main():
     
     if __name__ == "__main__":
         for i in range(epochs):
+            print("Epoch #"+(str(i)))
             run_model(model, optimizer, train_loader, test_loader, loss)
     
     accuracy, precision, recall = test(model, test_loader, statistic)
+
+
+main()
