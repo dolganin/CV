@@ -2,7 +2,6 @@
 from os import listdir
 from os.path import join
 from datetime import datetime
-import glob
 
 # Standard libraries for ML, we will use it permanently.
 import numpy as np
@@ -36,7 +35,7 @@ k_prop = config["training_parameters"]["k_prop"] # Testset in this dataset sucks
 dropout_rate = config["model_parameters"]["dropout_rate"] #A little bit increase of this probabilty will occur as bad converge
 wd = config["model_parameters"]["weight_decay"] # Weight decay for weight regularization
 
-counter = len(glob.glob(rootdir + "/**/", recursive=True))
+counter = ImageFolder(rootdir).__len__()
 
 output_dir = config["output_parameters"]["out_directory"]
 
