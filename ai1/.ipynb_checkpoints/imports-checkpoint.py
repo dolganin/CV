@@ -2,13 +2,13 @@
 from os import listdir
 from os.path import join
 from datetime import datetime
+import glob
 
 # Standard libraries for ML, we will use it permanently.
 import numpy as np
 import pandas as pd
 import torch
 
-import torchmetrics.classification.accuracy # It may be bad idea to use this for metrics, but different tests gave me not bad result.
 import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.optim as optim
@@ -20,18 +20,26 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import transforms # I don't like albumentations library because of my classes in university...
 from tqdm import tqdm
 
-#Constants that we will use in the next cells.
-rootdir = "simpsons_dataset" #This is where dataset located. Change it to the relevant.
-rate_learning = 1e-3
-epochs = 30  # After 30th epoch we can see the beginning of overfitting at this parameters. I guess there could be a bit more complexity of model than it need.
-classnum = 42 # As you will use this dataset for DL, don't forget to delete duplicate of simpson_dataset in simpson_dataset.
-bs = 128 # Change this parameter according to hardware.
-k_prop = 0.8 # Testset in this dataset sucks.
-wd = 1e-3 # Weight decay for weight regularization
-classlist = listdir(rootdir)
-counter = 20933
+from yaml_reader import yaml_reader
 
-dropout_rate = 0.2 #A little bit increase of this probabilty will occur as bad converge
+#Constants that we will use in the next cells.
+config = yaml_reader()
+
+rootdir = config["dataset_parameters"]["rootdir"] #This is where dataset located. Change it to the relevant.
+classlist = listdir(rootdir)
+classnum = len(classlist) # As you will use this dataset for DL, don't forget to delete duplicate of simpson_dataset in simpson_dataset.
+
+rate_learning = config["training_parameters"]["learning_rate"]
+epochs = config["training_parameters"]["num_epochs"]  # After 30th epoch we can see the beginning of overfitting at this parameters. I guess there could be a bit more complexity of model than it need.
+bs = config["training_parameters"]["batch_size"] # Change this parameter according to hardware.
+k_prop = config["training_parameters"]["k_prop"] # Testset in this dataset sucks.
+dropout_rate = config["model_parameters"]["dropout_rate"] #A little bit increase of this probabilty will occur as bad converge
+wd = config["model_parameters"]["weight_decay"] # Weight decay for weight regularization
+
+counter = len(glob.glob(rootdir + "/**/", recursive=True))
+
+output_dir = config["output_parameters"]["out_directory"]
+
 loss_list_train = []
 loss_list_test = []
 

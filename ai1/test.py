@@ -1,6 +1,6 @@
 from imports import *
 # Calculate TP, TN, FN, FP for every class through MultiClassStatScores
-def test(model, testloader, stats):
+def test_model(model, testloader, stats):
     for data, labels in testloader:
         model.eval()
         

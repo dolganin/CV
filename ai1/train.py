@@ -14,6 +14,7 @@ def run_model(model, optim, trainloader, testloader, loss_func):
         loss.backward()
         optim.step()
     print("Finished training at "+str(datetime.now()))
+    print("Mean loss at this stage is "+str((np.asarray(loss_list_train)).mean()))
 
     print("Started testing at "+str(datetime.now()))
     for data, labels in tqdm(testloader):
