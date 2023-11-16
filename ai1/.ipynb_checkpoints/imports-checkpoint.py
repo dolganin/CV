@@ -37,7 +37,10 @@ wd = config["model_parameters"]["weight_decay"] # Weight decay for weight regula
 
 counter = ImageFolder(rootdir).__len__()
 
-output_dir = config["output_parameters"]["out_directory"]
+output_model_dir = config["output_parameters"]["out_model_directory"]
+output_graphics_dir = config["output_parameters"]["out_graphics_directory"]
+output_inference_dir = config["output_parameters"]["out_inference_directory"]
+parts = config["output_parameters"]["part_of_partitions"]
 
 loss_list_train = []
 loss_list_test = []
