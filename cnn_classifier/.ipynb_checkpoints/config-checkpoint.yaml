@@ -1,0 +1,20 @@
+dataset_parameters:
+    rootdir: "../simpsons_dataset"
+
+model_parameters:
+    weight_decay: 0.006
+    dropout_rate: 0.1
+  
+    
+training_parameters:
+  batch_size: 256
+  learning_rate: 0.008
+  num_epochs: 40
+  k_prop: 0.8
+
+output_parameters:
+    part_of_partitions: 4
+    out_model_directory: "model/"
+    out_graphics_directory: "graphics/"
+    out_inference_directory: "inference/"
+    
