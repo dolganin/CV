@@ -1,0 +1,24 @@
+dataset_parameters:
+    labels: "labels/"
+    images: "images/"
+    width: 192
+    heigth: 256
+    channels: 3
+
+model_parameters:
+    weight_decay: 0.008
+    dropout_rate: 0.2
+  
+    
+training_parameters:
+  batch_size: 2
+  learning_rate: 0.006
+  num_epochs: 10
+  k_prop: 0.8
+
+output_parameters:
+    part_of_partitions: 1
+    out_model_directory: "model/"
+    out_graphics_directory: "graphics/"
+    out_inference_directory: "inference/"
+    

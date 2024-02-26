@@ -27,6 +27,8 @@ def main():
     print("Started testing model")
     
     accuracy, precision, recall = test_model(model, test_loader, statistic)
+    
+    print(accuracy, precision, recall)
 
     torch.save(model.state_dict(), output_model_dir+"model.pt")
     loss_graphics(output_graphics_dir)

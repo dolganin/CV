@@ -2,6 +2,7 @@
 from os import listdir
 from os.path import join
 from datetime import datetime
+from collections import defaultdict
 
 # Standard libraries for ML, we will use it permanently.
 import numpy as np
@@ -11,6 +12,7 @@ import torch
 import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.data import Subset
 
 from torchmetrics.classification import MulticlassStatScores
 from torchvision.datasets import ImageFolder #M ethod that allow us to use name of directories as labels.
@@ -18,6 +20,7 @@ from torchvision.io import read_image
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms # I don't like albumentations library because of my classes in university...
 from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 
 from yaml_reader import yaml_reader
 
