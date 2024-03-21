@@ -20,25 +20,26 @@ from torchvision.io import read_image
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms # I don't like albumentations library because of my classes in university...
 from tqdm import tqdm
-from sklearn.model_selection import train_test_split
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from yaml_reader import yaml_reader
 
 #Constants that we will use in the next cells.
 config = yaml_reader()
 
-rootdir = config["dataset_parameters"]["rootdir"] #This is where dataset located. Change it to the relevant.
-classlist = listdir(rootdir)
+testdir = config["dataset_parameters"]["testdir"] #This is where dataset located. Change it to the relevant.
+traindir = config["dataset_parameters"]["traindir"]
+
+classlist = listdir(testdir)
 classnum = len(classlist) # As you will use this dataset for DL, don't forget to delete duplicate of simpson_dataset in simpson_dataset.
 
 rate_learning = config["training_parameters"]["learning_rate"]
 epochs = config["training_parameters"]["num_epochs"]  # After 30th epoch we can see the beginning of overfitting at this parameters. I guess there could be a bit more complexity of model than it need.
 bs = config["training_parameters"]["batch_size"] # Change this parameter according to hardware.
-k_prop = config["training_parameters"]["k_prop"] # Testset in this dataset sucks.
 dropout_rate = config["model_parameters"]["dropout_rate"] #A little bit increase of this probabilty will occur as bad converge
 wd = config["model_parameters"]["weight_decay"] # Weight decay for weight regularization
 
-counter = ImageFolder(rootdir).__len__()
+counter = ImageFolder(traindir).__len__()
 
 output_model_dir = config["output_parameters"]["out_model_directory"]
 output_graphics_dir = config["output_parameters"]["out_graphics_directory"]
