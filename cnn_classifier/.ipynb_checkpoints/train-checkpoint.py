@@ -3,7 +3,7 @@ from imports import *
 def run_model(model, optim, trainloader, testloader, loss_func):
     batch_number = 0
     train_loss = []
-    print("Started training at "+ str(datetime.now()))
+    print(f"Started training at "+ str(datetime.now()))
     for data, labels in tqdm(trainloader):
 
         model.train()  # Evaluate our model in test mode. In default - model is in this mode.
@@ -20,10 +20,10 @@ def run_model(model, optim, trainloader, testloader, loss_func):
     loss_list_train.append(np.array(train_loss).mean())
         
         
-    print("Finished training at "+ str(datetime.now()))
-    print("Mean loss at this stage is "+ str((np.array(train_loss).mean())))
+    print(f"Finished training at "+ str(datetime.now()))
+    print(f"Mean loss at this stage is "+ str((np.array(train_loss).mean())))
 
-    print("Started testing at "+str(datetime.now()))
+    print(f"Started testing at "+str(datetime.now()))
     test_loss = []
     for data, labels in tqdm(testloader):
         model.eval()  # Change model's mode to test. What the difference: in this mode Pytorch don't accumulate gradients in calculation graphs, also BN
@@ -38,7 +38,7 @@ def run_model(model, optim, trainloader, testloader, loss_func):
         test_loss.append(loss.item())
 
     loss_list_test.append(np.array(test_loss).mean())
-    print("Mean loss at this stage is "+ str((np.array(test_loss).mean())))
-    print("Finished testing at "+ str(datetime.now()))
+    print(f"Mean loss at this stage is "+ str((np.array(test_loss).mean())))
+    print(f"Finished testing at "+ str(datetime.now()))
         
     return None

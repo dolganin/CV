@@ -1,6 +1,7 @@
 dataset_parameters:
     testdir: "../datasets/the_simpson_dataset/test"
     traindir: "../datasets/the_simpson_dataset/train"
+    #traindir: "../datasets/the_simpson_dataset/transfer_learning"
 
 model_parameters:
     weight_decay: 0.001
@@ -10,10 +11,10 @@ model_parameters:
 training_parameters:
   batch_size: 64
   learning_rate: 0.003
-  num_epochs: 40
+  num_epochs: 300
 
 output_parameters:
-    part_of_partitions: 3
+    part_of_partitions: 6
     out_model_directory: "model/"
     out_graphics_directory: "graphics/"
     out_inference_directory: "inference/"

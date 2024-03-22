@@ -17,20 +17,21 @@ def main():
     
     model, optimizer, loss, statistic = model_create(class_weights)
     
+    model.load_state_dict(torch.load("model/best.pt"))
+    
     if __name__ == "__main__":
         for i in range(epochs):
-            print("Epoch #"+(str(i)))
+            print(f"Epoch #"+(str(i)))
             run_model(model, optimizer, train_loader, test_loader, loss)
 
-        print("Finished training for whole epochs")
+        print(f"Finished training for whole epochs")
     
-    print("Started testing model")
+    print(f"Started testing model")
     
+    torch.save(model.state_dict(), output_model_dir+"over_epoch.pt")
     accuracy, precision, recall = test_model(model, test_loader, statistic)
-    
     print(accuracy, precision, recall)
 
-    torch.save(model.state_dict(), output_model_dir+"model.pt")
     loss_graphics(output_graphics_dir)
     metric_bars(output_graphics_dir, accuracy, precision, recall)
 

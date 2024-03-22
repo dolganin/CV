@@ -18,7 +18,7 @@ from torchmetrics.classification import MulticlassStatScores
 from torchvision.datasets import ImageFolder #M ethod that allow us to use name of directories as labels.
 from torchvision.io import read_image
 from torch.utils.data import DataLoader
-from torchvision.transforms import transforms # I don't like albumentations library because of my classes in university...
+from torchvision.transforms import v2 as transforms # I don't like albumentations library because of my classes in university...
 from tqdm import tqdm
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
